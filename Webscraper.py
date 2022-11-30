@@ -1,19 +1,26 @@
-from requests_html import HTMLSession
-s = HTMLSession()
+from bs4 import BeautifulSoup
+import requests
 
-query = 'youngstown'
-url = f'https://www.google.com/search?q=weather+{query}'
+print("Let's check the weather where you want to visit.")
+city = input("Pick a city: ")
+state = input("What state is that in? ")
+url = f'https://www.wunderground.com/weather/us/{state}/{city}'
 
-r = s.get(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/105.0.0.0 Safari/537.36'})
+response = requests.get(url)
+# print(response.text)
+soup = BeautifulSoup(response.content,'html.parser')
 
-temp = r.html.find('div.gNCp2e span.wob_t', first=True).text
-unit = r.html.find('div.vk_bk.wob-unit span.wob_t', first=True).text
-desc = r.html.find('div.VQF4g', first=True).find('span#wob_dc', first=True).text
-[1]
-print(query, temp, unit, desc)
+# temps = soup.find_all('a')
+temp = soup.find(class_ ='wu-value wu-value-to')
+# print(temp.text)s
+int_temp = int(temp.text)
+comfortability = ""
 
-('too hot = 90>')
-('just right = 65-90')
-('too cold = 65<')
+if int_temp >= 90:
+    comfortability = "too hot!!!"
+elif int_temp < 90 and int_temp > 65:
+    comfortability = "just right!"
+else:
+    comfortability = "way too freaking cold."
 
-print ('too cold')
+print(f"It's curently {int_temp} degrees. It's {comfortability}")
